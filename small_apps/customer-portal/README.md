@@ -2,44 +2,27 @@
 
 ## Artifact Design Thinking
 
-**Platform**: Traditional Cloud Foundry  
-**Complexity**: Medium
+**Platform**: Traditional Cloud Foundry | **Complexity**: Medium
 
-### Design Rationale
-This represents a customer-facing banking web application built with modern frontend technologies. The artifacts demonstrate:
+Customer-facing banking web application demonstrating modern frontend deployment patterns:
 
-- **Node.js buildpack** for React-based single page application
-- **Frontend-specific configurations** (CSP policies, analytics integration)
-- **OAuth2 authentication** with proper redirect handling for banking security
-- **Multiple domain routing** (portal.banking.com, mobile.banking.com)
-- **Content delivery network** integration for performance
-- **Feature flag management** for gradual feature rollouts
+- **Node.js buildpack** - React-based SPA with CF-specific configurations
+- **OAuth2 authentication** - banking-grade security with proper redirect handling
+- **Multiple domain routing** - portal.banking.com, mobile.banking.com
+- **Frontend-specific configs** - CSP policies, CDN integration, analytics
+- **Feature flag management** - gradual rollouts for banking products
 
-### Key Complexity Features
-- OAuth2 authentication flow with banking-grade security
-- Content Security Policy for XSS protection
+### Key Features
+- Banking-grade OAuth2 security and CSP protection
 - Multi-channel support (web + mobile domains)
-- Analytics integration (Google Analytics, Hotjar)
-- Session management with Redis
-- Feature toggles for banking products (deposits, transfers)
+- Session management with Redis and feature toggles
 
-## Running and Testing
+## Quick Start
 
 ### Prerequisites
-- Node.js 18 or higher (as specified in package.json)
-- npm 8 or higher
+- Node.js 18+, npm 8+
 
-### Environment Setup
-```bash
-# Ensure Node.js 18+ is installed
-node -v  # Should show version 18.x.x or higher
-
-# If using nvm
-nvm install 18
-nvm use 18
-```
-
-### Build and Test
+### Run
 ```bash
 # Install dependencies
 npm install
@@ -50,17 +33,11 @@ npm test
 # Start development server
 npm start
 
-# Start with auto-reload (development)
-npm run dev
-
 # Build for production
 npm run build
 ```
 
-### Test Configuration
-The application includes a basic test using Jest to verify the testing framework is working correctly. Additional tests can be added for Express routes and React components.
-
-### Cloud Foundry Deployment
+### Deploy
 ```bash
 cf push
 ```

@@ -2,44 +2,27 @@
 
 ## Artifact Design Thinking
 
-**Platform**: Korifi  
-**Complexity**: Medium
+**Platform**: Korifi | **Complexity**: Medium
 
-### Design Rationale
-This represents a multi-channel customer communication service for banking notifications. The artifacts demonstrate:
+Multi-channel customer communication service demonstrating modern notification patterns:
 
-- **Node.js buildpack** for real-time notification processing and API integrations
-- **Multi-provider strategy** (SendGrid, Twilio, Firebase) for email, SMS, and push notifications
-- **Rate limiting configurations** preventing notification spam and managing costs
-- **Template engine integration** (Handlebars) for personalized banking communications
-- **Message queue processing** (RabbitMQ) for reliable notification delivery
-- **Korifi metadata** focused on customer experience team ownership
+- **Node.js buildpack** - real-time notification processing with Korifi configuration
+- **Multi-provider strategy** - SendGrid, Twilio, Firebase for email, SMS, push notifications
+- **Rate limiting configurations** - prevents notification spam and manages costs
+- **Template engine integration** - Handlebars for personalized banking communications
+- **Message queue processing** - RabbitMQ for reliable notification delivery
 
-### Key Complexity Features
-- Multi-channel notification delivery (email, SMS, push)
-- Integration with 3 different service providers for redundancy
-- Rate limiting per channel to prevent abuse
-- Template caching and personalization engine
-- Queue-based reliable message delivery
+### Key Features
+- Multi-channel delivery (email, SMS, push) with 3-provider redundancy
+- Rate limiting per channel and template caching with personalization
 - Banking-specific notification types (alerts, statements, promotions)
 
-## Running and Testing
+## Quick Start
 
 ### Prerequisites
-- Node.js 18 or higher (as specified in package.json)
-- npm 8 or higher
+- Node.js 18+, npm 8+
 
-### Environment Setup
-```bash
-# Ensure Node.js 18+ is installed
-node -v  # Should show version 18.x.x or higher
-
-# If using nvm
-nvm install 18
-nvm use 18
-```
-
-### Build and Test
+### Run
 ```bash
 # Install dependencies
 npm install
@@ -47,18 +30,11 @@ npm install
 # Run tests
 npm test
 
-# Start development server with auto-reload
+# Start development server
 npm run dev
-
-# Start production server
-npm start
 ```
 
-### Test Configuration
-The application includes a basic test using Jest to verify the testing framework is working correctly. Additional tests can be added for notification handlers and template processing.
-
-### Korifi Deployment
+### Deploy
 ```bash
-# Deploy to Korifi
 kf push notification-service
 ```
