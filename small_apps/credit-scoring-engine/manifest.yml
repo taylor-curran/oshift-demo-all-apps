@@ -1,0 +1,63 @@
+---
+applications:
+- name: credit-scoring-engine
+  instances: 4
+  memory: 3072M
+  disk_quota: 5G
+  stack: cflinuxfs4
+  buildpacks:
+    - java_buildpack
+    - python_buildpack
+  path: ./target/credit-scoring-engine-3.1.0.jar
+  
+  env:
+    SPRING_PROFILES_ACTIVE: production,scoring
+    JBP_CONFIG_OPEN_JDK_JRE: '[jre: {version: 17.+}]'
+    JVM_OPTS: "-Xmx2560m -XX:+UseG1GC -XX:+UseStringDeduplication"
+    
+    # Credit Bureau APIs
+    EXPERIAN_API_URL: "https://api.experian.com/credit"
+    EQUIFAX_API_URL: "https://api.equifax.com/ews"
+    TRANSUNION_API_URL: "https://api.transunion.com/credit"
+    CREDIT_API_TIMEOUT: "15000"
+    
+    # Scoring Models
+    FICO_MODEL_VERSION: "9.0"
+    VANTAGE_MODEL_VERSION: "4.0"
+    CUSTOM_MODEL_PATH: "/models/proprietary-score-v2.3.pkl"
+    
+    # Data Sources
+    INCOME_VERIFICATION_API: "https://api.theworknumber.com"
+    BANK_STATEMENT_ANALYZER: "https://api.plaid.com/v2"
+    
+    # Risk Thresholds
+    MIN_CREDIT_SCORE: "580"
+    MAX_DTI_RATIO: "0.43"
+    MIN_INCOME_VERIFICATION: "true"
+    
+    # Compliance & Regulation
+    FCRA_COMPLIANCE_MODE: "true"
+    ECOA_COMPLIANCE_MODE: "true"
+    ADVERSE_ACTION_NOTIFICATIONS: "true"
+    
+    # Machine Learning
+    ML_FEATURE_COUNT: "247"
+    MODEL_REFRESH_INTERVAL: "24h"
+    A_B_TEST_ENABLED: "true"
+    
+  services:
+    - credit-postgres-primary
+    - credit-postgres-replica
+    - credit-redis-cluster
+    - model-storage-s3
+    - credit-bureau-proxy
+    - encryption-service
+    - audit-trail-kafka
+    
+  routes:
+    - route: credit-scoring.internal.banking.com
+    - route: credit-api-v3.banking.com
+      
+  health-check-type: http
+  health-check-http-endpoint: /actuator/health/detailed
+  health-check-invocation-timeout: 20

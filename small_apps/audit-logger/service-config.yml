@@ -1,0 +1,30 @@
+environment_variables:
+  # Go Configuration
+  GOMAXPROCS: "2"
+  CGO_ENABLED: "0"
+  
+  # Audit Configuration
+  LOG_RETENTION_DAYS: "2555"  # 7 years for compliance
+  ENCRYPTION_KEY_ID: "audit-encryption-key-v3"
+  AUDIT_BUFFER_SIZE: "1000"
+  
+  # Storage
+  S3_BUCKET: "banking-audit-logs-prod"
+  S3_REGION: "us-east-1"
+  
+  # Message Queue
+  NATS_URL: "nats://audit-nats:4222"
+  AUDIT_SUBJECT: "banking.audit.events"
+  
+  # Compliance
+  PCI_COMPLIANCE_MODE: "true"
+  SOX_COMPLIANCE_MODE: "true"
+  GDPR_COMPLIANCE_MODE: "true"
+  
+  # Monitoring
+  PROMETHEUS_PORT: "9090"
+  LOG_LEVEL: "INFO"
+
+services:
+  - audit-s3-storage
+  - audit-nats-queue

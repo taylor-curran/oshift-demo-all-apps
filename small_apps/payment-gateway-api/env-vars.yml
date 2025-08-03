@@ -1,0 +1,31 @@
+environment_variables:
+  # Application Configuration
+  SPRING_PROFILES_ACTIVE: "production,payments"
+  SERVER_PORT: "8080"
+  MANAGEMENT_SERVER_PORT: "8081"
+  
+  # Payment Processing
+  PAYMENT_PROCESSOR_ENDPOINT: "https://api.stripe.com/v1"
+  PAYMENT_TIMEOUT_MS: "30000"
+  MAX_PAYMENT_AMOUNT: "10000.00"
+  CURRENCY_DEFAULT: "USD"
+  
+  # Redis Cache Configuration
+  REDIS_URL: "redis://redis-cache:6379"
+  REDIS_TIMEOUT: "5000"
+  CACHE_TTL_SECONDS: "3600"
+  
+  # Security & Authentication
+  JWT_SECRET_KEY: "((payment-jwt-secret))"
+  API_KEY_HEADER: "X-API-Key"
+  RATE_LIMIT_REQUESTS_PER_MINUTE: "1000"
+  
+  # Monitoring & Observability
+  OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger:14268/api/traces"
+  METRICS_EXPORT_INTERVAL: "60s"
+  LOG_LEVEL: "INFO"
+  
+  # Feature Flags
+  FEATURE_INTERNATIONAL_PAYMENTS: "true"
+  FEATURE_RECURRING_PAYMENTS: "true"
+  FEATURE_FRAUD_CHECK: "true"

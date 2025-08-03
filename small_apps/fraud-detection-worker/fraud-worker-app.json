@@ -1,0 +1,24 @@
+{
+  "name": "fraud-detection-worker",
+  "lifecycle": {
+    "type": "buildpack",
+    "data": {
+      "stack": "paketo-buildpacks-stacks-jammy",
+      "buildpacks": [
+        "gcr.io/paketo-buildpacks/python",
+        "gcr.io/paketo-buildpacks/pip"
+      ]
+    }
+  },
+  "relationships": {
+    "space": { "data": { "guid": "ml-services" } }
+  },
+  "metadata": {
+    "labels": {
+      "app.kubernetes.io/name": "fraud-detection-worker",
+      "app.kubernetes.io/component": "ml-worker",
+      "team": "fraud-prevention",
+      "ml-model-version": "v2.1.3"
+    }
+  }
+}

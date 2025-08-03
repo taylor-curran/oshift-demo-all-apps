@@ -1,0 +1,57 @@
+environment_variables:
+  # .NET Configuration
+  DOTNET_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:8080"
+  DOTNET_gcServer: "1"
+  
+  # Real-time Analytics
+  STREAM_PROCESSING_MODE: "real-time"
+  WINDOW_SIZE_MINUTES: "5"
+  AGGREGATION_INTERVAL: "30s"
+  
+  # Data Sources
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-cluster:9092"
+  KAFKA_CONSUMER_GROUP: "risk-analytics"
+  TRANSACTION_TOPIC: "banking.transactions"
+  MARKET_DATA_TOPIC: "market.prices"
+  
+  # Risk Models
+  VAR_MODEL_VERSION: "3.2.1"
+  STRESS_TEST_SCENARIOS: "baseline,adverse,severely-adverse"
+  RISK_HORIZON_DAYS: "250"
+  CONFIDENCE_LEVEL: "0.99"
+  
+  # Time Series Database
+  INFLUXDB_URL: "http://timeseries-db:8086"
+  INFLUXDB_BUCKET: "risk-metrics"
+  RETENTION_POLICY: "30d"
+  
+  # Machine Learning
+  ML_MODEL_ENDPOINT: "http://ml-models:8080/predict"
+  FEATURE_ENGINEERING_PIPELINE: "v2.1"
+  MODEL_REFRESH_HOURS: "4"
+  
+  # Regulatory Reporting
+  BASEL_III_COMPLIANCE: "true"
+  CCAR_REPORTING: "true"
+  LIQUIDITY_RATIOS: "true"
+  
+  # Alerting Thresholds
+  CREDIT_RISK_THRESHOLD: "0.02"
+  MARKET_RISK_THRESHOLD: "0.015"
+  OPERATIONAL_RISK_THRESHOLD: "0.01"
+  
+  # Performance
+  BATCH_SIZE: "1000"
+  PARALLEL_PROCESSING: "true"
+  CACHE_SIZE_MB: "512"
+  
+  # Monitoring
+  PROMETHEUS_METRICS: "true"
+  LOG_LEVEL: "Information"
+
+services:
+  - risk-kafka
+  - timeseries-influxdb
+  - ml-model-service
+  - regulatory-storage

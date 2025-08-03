@@ -1,0 +1,23 @@
+{
+  "name": "audit-logger",
+  "lifecycle": {
+    "type": "buildpack",
+    "data": {
+      "stack": "paketo-buildpacks-stacks-jammy",
+      "buildpacks": [
+        "gcr.io/paketo-buildpacks/go"
+      ]
+    }
+  },
+  "relationships": {
+    "space": { "data": { "guid": "compliance" } }
+  },
+  "metadata": {
+    "labels": {
+      "app.kubernetes.io/name": "audit-logger",
+      "app.kubernetes.io/component": "logging",
+      "team": "compliance",
+      "compliance-level": "sox-pci"
+    }
+  }
+}

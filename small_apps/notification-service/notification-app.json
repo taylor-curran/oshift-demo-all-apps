@@ -1,0 +1,23 @@
+{
+  "name": "notification-service",
+  "lifecycle": {
+    "type": "buildpack",
+    "data": {
+      "stack": "paketo-buildpacks-stacks-jammy",
+      "buildpacks": [
+        "gcr.io/paketo-buildpacks/nodejs",
+        "gcr.io/paketo-buildpacks/npm"
+      ]
+    }
+  },
+  "relationships": {
+    "space": { "data": { "guid": "communications" } }
+  },
+  "metadata": {
+    "labels": {
+      "app.kubernetes.io/name": "notification-service",
+      "app.kubernetes.io/component": "communications",
+      "team": "customer-experience"
+    }
+  }
+}

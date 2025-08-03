@@ -1,0 +1,28 @@
+{
+  "name": "payment-gateway-api",
+  "lifecycle": {
+    "type": "buildpack",
+    "data": {
+      "stack": "paketo-buildpacks-stacks-jammy",
+      "buildpacks": [
+        "gcr.io/paketo-buildpacks/java",
+        "gcr.io/paketo-buildpacks/spring-boot"
+      ]
+    }
+  },
+  "relationships": {
+    "space": { "data": { "guid": "production" } }
+  },
+  "metadata": {
+    "labels": {
+      "app.kubernetes.io/name": "payment-gateway-api",
+      "app.kubernetes.io/component": "api-gateway",
+      "team": "payments",
+      "environment": "production"
+    },
+    "annotations": {
+      "config.alpha.coreos.com/ignore": "true",
+      "deployment.kubernetes.io/revision": "3"
+    }
+  }
+}

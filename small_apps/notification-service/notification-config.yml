@@ -1,0 +1,44 @@
+environment_variables:
+  # Node.js Configuration
+  NODE_ENV: "production"
+  NODE_OPTIONS: "--max-old-space-size=512"
+  
+  # Multi-channel Configuration
+  EMAIL_PROVIDER: "sendgrid"
+  SMS_PROVIDER: "twilio"
+  PUSH_PROVIDER: "firebase"
+  
+  # Email Settings
+  SENDGRID_API_KEY: "((sendgrid-api-key))"
+  EMAIL_FROM_ADDRESS: "noreply@banking.com"
+  EMAIL_REPLY_TO: "support@banking.com"
+  
+  # SMS Settings  
+  TWILIO_ACCOUNT_SID: "((twilio-account-sid))"
+  TWILIO_AUTH_TOKEN: "((twilio-auth-token))"
+  SMS_FROM_NUMBER: "+15551234567"
+  
+  # Push Notifications
+  FCM_SERVER_KEY: "((firebase-server-key))"
+  APNS_KEY_ID: "((apns-key-id))"
+  
+  # Message Queue
+  RABBITMQ_URL: "amqp://notification-queue:5672"
+  QUEUE_PREFETCH: "50"
+  
+  # Template Engine
+  TEMPLATE_CACHE_TTL: "3600"
+  TEMPLATE_ENGINE: "handlebars"
+  
+  # Rate Limiting
+  EMAIL_RATE_LIMIT: "1000/hour"
+  SMS_RATE_LIMIT: "500/hour"
+  PUSH_RATE_LIMIT: "10000/hour"
+  
+  # Monitoring
+  LOG_LEVEL: "info"
+  METRICS_PORT: "9090"
+
+services:
+  - notification-rabbitmq
+  - template-storage

@@ -1,0 +1,48 @@
+---
+applications:
+- name: customer-portal
+  instances: 2
+  memory: 512M
+  disk_quota: 1G
+  stack: cflinuxfs4
+  buildpacks:
+    - nodejs_buildpack
+  path: ./dist
+  
+  env:
+    NODE_ENV: production
+    PORT: 8080
+    
+    # API Backend Configuration
+    API_BASE_URL: "https://account-api.apps.banking.com"
+    PAYMENT_API_URL: "https://payment-gateway.apps.banking.com"
+    
+    # Authentication
+    AUTH_PROVIDER: "oauth2"
+    OAUTH_CLIENT_ID: "customer-portal-prod"
+    OAUTH_REDIRECT_URL: "https://portal.banking.com/auth/callback"
+    
+    # Content Security Policy
+    CSP_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    
+    # Feature Flags
+    FEATURE_MOBILE_DEPOSIT: "true"
+    FEATURE_WIRE_TRANSFERS: "true"
+    FEATURE_INVESTMENT_TRACKING: "false"
+    
+    # Analytics
+    GOOGLE_ANALYTICS_ID: "GA-BANKING-PORTAL"
+    HOTJAR_ID: "2847593"
+    
+  services:
+    - portal-redis-session
+    - content-delivery-network
+    
+  routes:
+    - route: portal.banking.com
+    - route: mobile.banking.com
+      
+  health-check-type: http
+  health-check-http-endpoint: /health
+  
+  command: npm start

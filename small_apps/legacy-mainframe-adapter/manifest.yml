@@ -1,0 +1,87 @@
+---
+applications:
+- name: legacy-mainframe-adapter
+  instances: 2
+  memory: 4096M
+  disk_quota: 8G
+  stack: cflinuxfs4
+  buildpacks:
+    - java_buildpack
+    - binary_buildpack
+  path: ./target/mainframe-adapter-1.8.2.jar
+  
+  env:
+    SPRING_PROFILES_ACTIVE: production,mainframe,legacy-integration
+    JBP_CONFIG_OPEN_JDK_JRE: '[jre: {version: 11.+}]'  # Legacy Java version requirement
+    JVM_OPTS: "-Xmx3584m -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m"
+    
+    # IBM Mainframe Connection
+    CICS_REGION: "BANKPROD"
+    CICS_HOST: "mainframe.banking.internal"
+    CICS_PORT: "23"
+    CICS_USER_ID: "CFADPTER"
+    CICS_TRANSACTION_TIMEOUT: "30000"
+    
+    # IMS Database
+    IMS_CONNECT_HOST: "ims.banking.internal"
+    IMS_CONNECT_PORT: "9999"
+    IMS_DATABASE: "CUSTOMER"
+    IMS_PSB: "CUSTPSB1"
+    
+    # DB2 Mainframe
+    DB2_SUBSYSTEM: "DBPROD01"
+    DB2_LOCATION: "SYSPLEX.BANKING.COM"
+    DB2_COLLECTION_ID: "BANKING"
+    DB2_PACKAGE_SET: "BKGPKG01"
+    
+    # Message Queue (IBM MQ)
+    MQ_QUEUE_MANAGER: "BANKQM01"
+    MQ_CHANNEL: "SYSTEM.DEF.SVRCONN"
+    MQ_HOST: "mqseries.banking.internal"
+    MQ_PORT: "1414"
+    MQ_REQUEST_QUEUE: "BANK.REQUEST.QUEUE"
+    MQ_RESPONSE_QUEUE: "BANK.RESPONSE.QUEUE"
+    
+    # Legacy Protocol Support
+    SNA_LU_NAME: "BANKAPP1"
+    TN3270_SCREEN_SIZE: "24x80"
+    EBCDIC_CODEPAGE: "CP037"
+    
+    # Error Handling & Resilience
+    MAINFRAME_CIRCUIT_BREAKER_THRESHOLD: "5"
+    RETRY_ATTEMPTS: "3"
+    FALLBACK_MODE_ENABLED: "true"
+    LEGACY_TIMEOUT_MS: "45000"
+    
+    # Security
+    RACF_USER_ID: "CFUSR001"
+    SSL_KEYSTORE_PATH: "/security/mainframe-keystore.jks"
+    ENCRYPTION_ALGORITHM: "DES3"
+    
+    # Monitoring & Alerting
+    MAINFRAME_HEALTH_CHECK_INTERVAL: "60s"
+    LEGACY_SYSTEM_ALERTS_ENABLED: "true"
+    PERFORMANCE_MONITORING: "true"
+    
+    # Data Transformation
+    COPYBOOK_PATH: "/copybooks"
+    COBOL_RECORD_LAYOUTS: "/layouts/customer-record.cpy"
+    CHARACTER_ENCODING: "IBM037"
+    
+  services:
+    - mainframe-connection-pool
+    - legacy-security-manager
+    - transaction-coordinator
+    - error-recovery-service
+    - monitoring-collector
+    - ssl-certificate-store
+    
+  routes:
+    - route: legacy-adapter.internal.banking.com
+      
+  health-check-type: http
+  health-check-http-endpoint: /actuator/health/mainframe
+  health-check-invocation-timeout: 45
+  
+  # Special configuration for legacy systems
+  command: java -Djava.library.path=/opt/ibm/cics -jar mainframe-adapter-1.8.2.jar

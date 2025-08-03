@@ -1,0 +1,23 @@
+{
+  "name": "risk-analytics",
+  "lifecycle": {
+    "type": "buildpack",
+    "data": {
+      "stack": "paketo-buildpacks-stacks-jammy",
+      "buildpacks": [
+        "gcr.io/paketo-buildpacks/dotnet-core"
+      ]
+    }
+  },
+  "relationships": {
+    "space": { "data": { "guid": "risk-management" } }
+  },
+  "metadata": {
+    "labels": {
+      "app.kubernetes.io/name": "risk-analytics",
+      "app.kubernetes.io/component": "analytics-engine",
+      "team": "risk-management",
+      "model-type": "real-time"
+    }
+  }
+}
