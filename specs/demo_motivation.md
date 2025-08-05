@@ -20,11 +20,11 @@
 
 ## Demo Objective
 
-Demonstrate automated migration of Java/Spring workloads from **Cloud Foundry** to **Red Hat OpenShift** using Windsurf AI-powered workflows that:
+Demonstrate automated migration of a **10-application portfolio** (Java, Python, Node.js, Go, C#) from **hybrid Cloud Foundry environments** (Korifi + Traditional CF) to **Red Hat OpenShift** using Windsurf AI-powered workflows that:
 
-1. **Analyze** existing CF deployment manifests and service bindings
-2. **Propose** OpenShift-native deployment strategies (Helm charts, operators, routes)
-3. **Generate** compliant Kubernetes manifests following platform engineering standards
+1. **Analyze** existing CF deployment manifests and service bindings across multiple platforms
+2. **Recognize patterns** across different application types and deployment strategies
+3. **Generate** compliant Kubernetes manifests with intelligent automation
 4. **Validate** generated resources against organizational policies and best practices
 
 **Target Audience**: Platform engineering decision-makers evaluating automated migration tooling for TAS-to-OCP initiatives.
