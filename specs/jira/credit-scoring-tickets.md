@@ -4,19 +4,20 @@ The following seven Jira tickets represent discrete working sessions needed to m
 
 ---
 
-## 1 – Inventory CF Artifacts
-**Labels**: `app-credit-scoring-engine`, `Devin`
-
+## Inventory CF Artifacts for App credit-scoring-engine
 
 - Analyse the cloudfoundry `manifest.yml`, env vars, and bound services.
 - Identify all external dependencies (Postgres primary/replica, Redis cluster, S3 model store, Kafka audit trail).
 - **Verification**: Cross-check service bindings with code; document whether each dependency is used, unused, or missing.
 - **Deliverable**: `agent-specs/inventory-report.md` summarising findings.
 
+- This ticket is part of a larger migration process 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 2 – Define Container Strategy
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Define Container Strategy for App credit-scoring-engine
 
 - Decide on JDK 17 base image and JAR copy pattern.
 - Draft initial `Dockerfile` (no multistage build required).
@@ -25,10 +26,12 @@ The following seven Jira tickets represent discrete working sessions needed to m
   - `agent-specs/container-strategy.md` documenting chosen approach and image details
   - `Dockerfile` in repository root
 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 3 – Map Service Bindings → K8s Config
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Map Service Bindings to K8s Config for App credit-scoring-engine
 
 - Convert the cloudfoundry service bindings to ConfigMaps/Secrets (DB creds, Redis, S3, Kafka).
 - helpful information from previous migration sessions can be found in the agent-specs directory
@@ -38,10 +41,12 @@ The following seven Jira tickets represent discrete working sessions needed to m
   - `agent-specs/binding-mapping.md` listing each mapping
   - Sample ConfigMap/Secret YAML files
 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 4 – Draft Core Kubernetes Manifests
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Draft Core Kubernetes Manifests for App credit-scoring-engine
 
 - Author `Deployment`, `Service`, and optional `Ingress` manifests.
 - Include probes, resource limits, and environment injections.
@@ -51,10 +56,12 @@ The following seven Jira tickets represent discrete working sessions needed to m
   - `agent-specs/k8s-manifests-draft.md` linking to YAML snippets
   - K8s YAML files in `k8s/` directory
 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 5 – Package as Helm Chart
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Package as Helm Chart for App credit-scoring-engine
 
 - Create `chart/` directory with `Chart.yaml`, `values.yaml`, and templates.
 - Run `helm install --dry-run` locally to verify rendering.
@@ -64,10 +71,12 @@ The following seven Jira tickets represent discrete working sessions needed to m
   - `agent-specs/helm-package-report.md` with output of dry-run and validation checks
   - Complete Helm chart in `chart/` directory
 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 6 – Validate
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Validate Artifacts for App credit-scoring-engine
 
 - Scan artifacts for issues that violate stated standards (found in files or devin knowledge)
 - You'll find a directory of standards in the devin knowldege folder named `k8s-standards`
@@ -76,10 +85,12 @@ The following seven Jira tickets represent discrete working sessions needed to m
   - `agent-specs/validation-results.md` summarising scan results and remediation steps
   - Updated artifacts addressing critical issues
 
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.
+
 ---
 
-## 7 – Deploy to OpenShift
-**Labels**: `app-credit-scoring-engine`, `Devin`
+## Deploy to OpenShift for App credit-scoring-engine
 
 - Deploy Helm chart to target OpenShift namespace.
 - Verify pod health, logs, and endpoint reachability.
@@ -87,3 +98,6 @@ The following seven Jira tickets represent discrete working sessions needed to m
 - **Deliverable**: 
   - `agent-specs/deployment-report.md` detailing deployment output and success criteria
   - Deployment verification screenshots/logs
+
+- Assume required artifacts will be created if not already present.
+- Note: Demo app has minimal code; focus on creating required migration artifacts.

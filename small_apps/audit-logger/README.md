@@ -39,3 +39,6 @@ go build -o audit-logger ./src
 ```bash
 kf push audit-logger --config audit-app.json
 ```
+
+⚠️ **IMPORTANT:** This demo contains only skeletal business logic; it exists solely to demonstrate infrastructure-migration artifacts.
+**Don't assume external services work or need to work right now** - S3, Redis, PostgreSQL in config ≠ real connections  

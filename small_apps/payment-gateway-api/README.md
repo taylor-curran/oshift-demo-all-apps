@@ -39,3 +39,6 @@ mvn spring-boot:run
 ```bash
 kf push payment-gateway-api --config payment-gateway-app.json
 ```
+
+⚠️ **IMPORTANT:** This demo contains only skeletal business logic; it exists solely to demonstrate infrastructure-migration artifacts.
+**Don't assume external services work or need to work right now** - S3, Redis, PostgreSQL in config ≠ real connections  

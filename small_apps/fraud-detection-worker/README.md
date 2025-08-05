@@ -41,3 +41,6 @@ python src/fraud_worker.py
 ```bash
 kf push fraud-detection-worker --config fraud-worker-app.json
 ```
+
+⚠️ **IMPORTANT:** This demo contains only skeletal business logic; it exists solely to demonstrate infrastructure-migration artifacts.
+**Don't assume external services work or need to work right now** - S3, Redis, PostgreSQL in config ≠ real connections  

@@ -1,0 +1,37 @@
+# name: Standards Application CI
+
+# on: 
+#   push:
+
+# jobs:
+#   devin-code-review:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0  # Get full history for diff analysis
+      
+#       - name: Get git information
+#         id: git-info
+#         run: |
+#           echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+#           echo "ref_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+#           echo "repository=${{ github.repository }}" >> $GITHUB_OUTPUT
+#           echo "event_name=${{ github.event_name }}" >> $GITHUB_OUTPUT
+#           if [ "${{ github.event_name }}" = "pull_request" ]; then
+#             echo "base_ref=${{ github.base_ref }}" >> $GITHUB_OUTPUT
+#             echo "head_ref=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+#             echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+#           fi
+      
+      # - name: Run code review
+      #   run: |
+      #     curl --request POST \
+      #       --url https://api.devin.ai/v1/sessions \
+      #       --header 'Authorization: Bearer ${{ secrets.DEVIN_API_KEY }}' \
+      #       --header 'Content-Type: application/json' \
+      #       --data '{
+      #         "prompt": "!k8s_standards_audit -- review the code diff against the stated standards using playbook for repo ${{ github.repository }}. Git info: commit SHA ${{ github.sha }}, ref ${{ github.ref }}, branch ${{ github.ref_name }}, event ${{ github.event_name }}${{ github.event_name == 'pull_request' && format(', PR #{0} from {1} to {2}', github.event.pull_request.number, github.head_ref, github.base_ref) || '' }} then please make fixes to the code and create a PR",
+      #         "idempotent": false
+      #       }'
