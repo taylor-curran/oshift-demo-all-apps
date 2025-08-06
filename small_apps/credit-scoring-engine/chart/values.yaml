@@ -1,0 +1,158 @@
+replicaCount: 4
+
+image:
+  repository: registry.bank.internal/credit-scoring-engine
+  tag: "3.1.0"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/actuator/prometheus"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    memory: "2.5Gi"
+    cpu: "500m"
+  limits:
+    memory: "3Gi"
+    cpu: "2000m"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+app:
+  name: credit-scoring-engine
+  version: "3.1.0"
+  partOf: retail-banking
+  environment: dev
+  managedBy: helm
+
+env:
+  springProfilesActive: "production,scoring"
+  jbpConfigOpenJdkJre: '[jre: {version: 17.+}]'
+  jvmOpts: "-Xmx2560m -XX:+UseG1GC -XX:+UseStringDeduplication"
+  serverPort: "8080"
+  
+  experianApiUrl: "https://api.experian.com/credit"
+  equifaxApiUrl: "https://api.equifax.com/ews"
+  transunionApiUrl: "https://api.transunion.com/credit"
+  creditApiTimeout: "15000"
+  
+  ficoModelVersion: "9.0"
+  vantageModelVersion: "4.0"
+  customModelPath: "/models/proprietary-score-v2.3.pkl"
+  
+  incomeVerificationApi: "https://api.theworknumber.com"
+  bankStatementAnalyzer: "https://api.plaid.com/v2"
+  
+  minCreditScore: "580"
+  maxDtiRatio: "0.43"
+  minIncomeVerification: "true"
+  
+  fcraComplianceMode: "true"
+  ecoaComplianceMode: "true"
+  adverseActionNotifications: "true"
+  
+  mlFeatureCount: "247"
+  modelRefreshInterval: "24h"
+  abTestEnabled: "true"
+
+probes:
+  liveness:
+    httpGet:
+      path: /api/v1/credit/health/detailed
+      port: 8080
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+volumes:
+  mlModels:
+    emptyDir: {}
+  tmpStorage:
+    emptyDir: {}
+  appLogs:
+    emptyDir: {}
+
+services:
+  postgresConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-postgres-primary-config
+    secretName: pe-eng-credit-scoring-engine-postgres-primary-secret
+  postgresReplicaConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-postgres-replica-config
+    secretName: pe-eng-credit-scoring-engine-postgres-replica-secret
+  redisConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-redis-cluster-config
+    secretName: pe-eng-credit-scoring-engine-redis-cluster-secret
+  s3Config:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-model-storage-s3-config
+    secretName: pe-eng-credit-scoring-engine-model-storage-s3-secret
+  creditBureauConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-credit-bureau-proxy-config
+    secretName: pe-eng-credit-scoring-engine-credit-bureau-proxy-secret
+  encryptionConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-encryption-service-config
+    secretName: pe-eng-credit-scoring-engine-encryption-service-secret
+  kafkaConfig:
+    enabled: true
+    configMapName: pe-eng-credit-scoring-engine-audit-trail-kafka-config
+    secretName: pe-eng-credit-scoring-engine-audit-trail-kafka-secret

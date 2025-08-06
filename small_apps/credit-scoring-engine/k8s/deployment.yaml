@@ -1,0 +1,157 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pe-eng-credit-scoring-engine-dev
+  labels:
+    app.kubernetes.io/name: credit-scoring-engine
+    app.kubernetes.io/version: "3.1.0"
+    app.kubernetes.io/part-of: retail-banking
+    environment: dev
+    managed-by: helm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: credit-scoring-engine
+      environment: dev
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: credit-scoring-engine
+        app.kubernetes.io/version: "3.1.0"
+        app.kubernetes.io/part-of: retail-banking
+        environment: dev
+        managed-by: helm
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: credit-scoring-engine
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        image: "credit-scoring-engine:3.1.0"
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            memory: "2.5Gi"
+            cpu: "500m"
+          limits:
+            memory: "3Gi"
+            cpu: "2000m"
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "production,scoring"
+        - name: JBP_CONFIG_OPEN_JDK_JRE
+          value: '[jre: {version: 17.+}]'
+        - name: JVM_OPTS
+          value: "-Xmx2560m -XX:+UseG1GC -XX:+UseStringDeduplication"
+        - name: SERVER_PORT
+          value: "8080"
+        - name: EXPERIAN_API_URL
+          value: "https://api.experian.com/credit"
+        - name: EQUIFAX_API_URL
+          value: "https://api.equifax.com/ews"
+        - name: TRANSUNION_API_URL
+          value: "https://api.transunion.com/credit"
+        - name: CREDIT_API_TIMEOUT
+          value: "15000"
+        - name: FICO_MODEL_VERSION
+          value: "9.0"
+        - name: VANTAGE_MODEL_VERSION
+          value: "4.0"
+        - name: CUSTOM_MODEL_PATH
+          value: "/models/proprietary-score-v2.3.pkl"
+        - name: INCOME_VERIFICATION_API
+          value: "https://api.theworknumber.com"
+        - name: BANK_STATEMENT_ANALYZER
+          value: "https://api.plaid.com/v2"
+        - name: MIN_CREDIT_SCORE
+          value: "580"
+        - name: MAX_DTI_RATIO
+          value: "0.43"
+        - name: MIN_INCOME_VERIFICATION
+          value: "true"
+        - name: FCRA_COMPLIANCE_MODE
+          value: "true"
+        - name: ECOA_COMPLIANCE_MODE
+          value: "true"
+        - name: ADVERSE_ACTION_NOTIFICATIONS
+          value: "true"
+        - name: ML_FEATURE_COUNT
+          value: "247"
+        - name: MODEL_REFRESH_INTERVAL
+          value: "24h"
+        - name: A_B_TEST_ENABLED
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-postgres-primary-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-postgres-primary-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-postgres-replica-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-postgres-replica-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-redis-cluster-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-redis-cluster-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-model-storage-s3-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-model-storage-s3-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-credit-bureau-proxy-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-credit-bureau-proxy-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-encryption-service-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-encryption-service-secret
+        - configMapRef:
+            name: pe-eng-credit-scoring-engine-audit-trail-kafka-config
+        - secretRef:
+            name: pe-eng-credit-scoring-engine-audit-trail-kafka-secret
+        livenessProbe:
+          httpGet:
+            path: /api/v1/credit/health/detailed
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+        - name: ml-models
+          mountPath: /models
+          readOnly: true
+        - name: tmp-storage
+          mountPath: /tmp
+        - name: app-logs
+          mountPath: /tmp/app-logs
+      volumes:
+      - name: ml-models
+        emptyDir: {}
+      - name: tmp-storage
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}

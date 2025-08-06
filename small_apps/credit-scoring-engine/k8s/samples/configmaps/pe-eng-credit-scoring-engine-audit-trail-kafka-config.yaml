@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pe-eng-credit-scoring-engine-audit-trail-kafka-config
+  labels:
+    app.kubernetes.io/name: credit-scoring-engine
+    app.kubernetes.io/version: "3.1.0"
+    app.kubernetes.io/part-of: retail-banking
+    environment: dev
+    managed-by: helm
+data:
+  brokers: "kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092"
+  topic: "credit-scoring-audit-trail"
+  consumer-group: "credit-scoring-engine-audit"
+  batch-size: "100"
+  linger-ms: "10"
+  acks: "all"
+  retries: "3"

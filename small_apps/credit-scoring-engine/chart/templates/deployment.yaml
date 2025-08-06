@@ -1,0 +1,165 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "credit-scoring-engine.fullname" . }}
+  labels:
+    {{- include "credit-scoring-engine.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "credit-scoring-engine.selectorLabels" . | nindent 6 }}
+      environment: {{ .Values.app.environment }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "credit-scoring-engine.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/version: {{ .Values.app.version | quote }}
+        app.kubernetes.io/part-of: {{ .Values.app.partOf }}
+        environment: {{ .Values.app.environment }}
+        managed-by: {{ .Values.app.managedBy }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "credit-scoring-engine.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.springProfilesActive | quote }}
+            - name: JBP_CONFIG_OPEN_JDK_JRE
+              value: {{ .Values.env.jbpConfigOpenJdkJre | quote }}
+            - name: JVM_OPTS
+              value: {{ .Values.env.jvmOpts | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.env.serverPort | quote }}
+            - name: EXPERIAN_API_URL
+              value: {{ .Values.env.experianApiUrl | quote }}
+            - name: EQUIFAX_API_URL
+              value: {{ .Values.env.equifaxApiUrl | quote }}
+            - name: TRANSUNION_API_URL
+              value: {{ .Values.env.transunionApiUrl | quote }}
+            - name: CREDIT_API_TIMEOUT
+              value: {{ .Values.env.creditApiTimeout | quote }}
+            - name: FICO_MODEL_VERSION
+              value: {{ .Values.env.ficoModelVersion | quote }}
+            - name: VANTAGE_MODEL_VERSION
+              value: {{ .Values.env.vantageModelVersion | quote }}
+            - name: CUSTOM_MODEL_PATH
+              value: {{ .Values.env.customModelPath | quote }}
+            - name: INCOME_VERIFICATION_API
+              value: {{ .Values.env.incomeVerificationApi | quote }}
+            - name: BANK_STATEMENT_ANALYZER
+              value: {{ .Values.env.bankStatementAnalyzer | quote }}
+            - name: MIN_CREDIT_SCORE
+              value: {{ .Values.env.minCreditScore | quote }}
+            - name: MAX_DTI_RATIO
+              value: {{ .Values.env.maxDtiRatio | quote }}
+            - name: MIN_INCOME_VERIFICATION
+              value: {{ .Values.env.minIncomeVerification | quote }}
+            - name: FCRA_COMPLIANCE_MODE
+              value: {{ .Values.env.fcraComplianceMode | quote }}
+            - name: ECOA_COMPLIANCE_MODE
+              value: {{ .Values.env.ecoaComplianceMode | quote }}
+            - name: ADVERSE_ACTION_NOTIFICATIONS
+              value: {{ .Values.env.adverseActionNotifications | quote }}
+            - name: ML_FEATURE_COUNT
+              value: {{ .Values.env.mlFeatureCount | quote }}
+            - name: MODEL_REFRESH_INTERVAL
+              value: {{ .Values.env.modelRefreshInterval | quote }}
+            - name: A_B_TEST_ENABLED
+              value: {{ .Values.env.abTestEnabled | quote }}
+          envFrom:
+            {{- if .Values.services.postgresConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.postgresConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.postgresConfig.secretName }}
+            {{- end }}
+            {{- if .Values.services.postgresReplicaConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.postgresReplicaConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.postgresReplicaConfig.secretName }}
+            {{- end }}
+            {{- if .Values.services.redisConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.redisConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.redisConfig.secretName }}
+            {{- end }}
+            {{- if .Values.services.s3Config.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.s3Config.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.s3Config.secretName }}
+            {{- end }}
+            {{- if .Values.services.creditBureauConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.creditBureauConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.creditBureauConfig.secretName }}
+            {{- end }}
+            {{- if .Values.services.encryptionConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.encryptionConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.encryptionConfig.secretName }}
+            {{- end }}
+            {{- if .Values.services.kafkaConfig.enabled }}
+            - configMapRef:
+                name: {{ .Values.services.kafkaConfig.configMapName }}
+            - secretRef:
+                name: {{ .Values.services.kafkaConfig.secretName }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: ml-models
+              mountPath: /models
+              readOnly: true
+            - name: tmp-storage
+              mountPath: /tmp
+            - name: app-logs
+              mountPath: /tmp/app-logs
+      volumes:
+        - name: ml-models
+          {{- toYaml .Values.volumes.mlModels | nindent 10 }}
+        - name: tmp-storage
+          {{- toYaml .Values.volumes.tmpStorage | nindent 10 }}
+        - name: app-logs
+          {{- toYaml .Values.volumes.appLogs | nindent 10 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

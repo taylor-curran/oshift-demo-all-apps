@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "credit-scoring-engine.fullname" . }}-config
+  labels:
+    {{- include "credit-scoring-engine.labels" . | nindent 4 }}
+data:
+  application.properties: |
+    spring.profiles.active={{ .Values.env.springProfilesActive }}
+    server.port={{ .Values.env.serverPort }}
+    
+    experian.api.url={{ .Values.env.experianApiUrl }}
+    equifax.api.url={{ .Values.env.equifaxApiUrl }}
+    transunion.api.url={{ .Values.env.transunionApiUrl }}
+    credit.api.timeout={{ .Values.env.creditApiTimeout }}
+    
+    fico.model.version={{ .Values.env.ficoModelVersion }}
+    vantage.model.version={{ .Values.env.vantageModelVersion }}
+    custom.model.path={{ .Values.env.customModelPath }}
+    
+    income.verification.api={{ .Values.env.incomeVerificationApi }}
+    bank.statement.analyzer={{ .Values.env.bankStatementAnalyzer }}
+    
+    min.credit.score={{ .Values.env.minCreditScore }}
+    max.dti.ratio={{ .Values.env.maxDtiRatio }}
+    min.income.verification={{ .Values.env.minIncomeVerification }}
+    
+    fcra.compliance.mode={{ .Values.env.fcraComplianceMode }}
+    ecoa.compliance.mode={{ .Values.env.ecoaComplianceMode }}
+    adverse.action.notifications={{ .Values.env.adverseActionNotifications }}
+    
+    ml.feature.count={{ .Values.env.mlFeatureCount }}
+    model.refresh.interval={{ .Values.env.modelRefreshInterval }}
+    ab.test.enabled={{ .Values.env.abTestEnabled }}
+    
+    logging.level.com.banking.credit=INFO
+    logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+    logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+    
+    management.endpoints.web.exposure.include=health,info,metrics,prometheus
+    management.endpoint.health.show-details=always
+    management.health.probes.enabled=true

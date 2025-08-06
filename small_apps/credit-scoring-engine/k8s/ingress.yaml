@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pe-eng-credit-scoring-engine-dev
+  labels:
+    app.kubernetes.io/name: credit-scoring-engine
+    app.kubernetes.io/version: "3.1.0"
+    app.kubernetes.io/part-of: retail-banking
+    environment: dev
+    managed-by: helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - credit-scoring.internal.banking.com
+    - credit-api-v3.banking.com
+    secretName: credit-scoring-engine-tls
+  rules:
+  - host: credit-scoring.internal.banking.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pe-eng-credit-scoring-engine-dev
+            port:
+              number: 8080
+  - host: credit-api-v3.banking.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pe-eng-credit-scoring-engine-dev
+            port:
+              number: 8080
