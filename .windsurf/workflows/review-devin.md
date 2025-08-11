@@ -46,11 +46,16 @@ gh pr diff ${PR_NUMBER}
 ## 3. List these items and also give a summary of what is in that main PR comment.
 
 
+IMPORTANT stop and check in with the user - give them options for proceeding
+
+IF approved go throught the check list items
+
 ## 4. Walk Through Each Checklist Item
 
 Keep the human(user) in the loop so they can follow along and validate your investigation
 
 IF there are k8s items in the diff, use kind to run k8s locally
+Only run k8s and docker containers locally
 
 ## 5. Stop to check in with the human user, give them and update and possible options for further exploration.
 

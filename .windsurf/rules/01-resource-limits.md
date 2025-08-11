@@ -1,3 +1,7 @@
+---
+trigger: manual
+---
+
 # Rule 01 – Enforce Resource Requests & Limits
 
 *Avoid “noisy‑neighbor” outages and surprise node evictions.*
